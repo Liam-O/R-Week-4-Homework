@@ -33,7 +33,7 @@ The data, [outlined here](http://vincentarelbundock.github.io/Rdatasets/doc/Ecda
 
 
 #### II. Basic Plots
-First, let's use the basic scatter plot function to plot all combinations of the variables in the dataset to get a better idea what we are looking at.
+First, let's use the basic scatter plot function to plot all combinations of the variables in the dataset to get a better idea of the data's behavior
 ```{r}
 plot(wages_df)
 ```
@@ -44,12 +44,18 @@ hist(wages_df$wage, breaks = 40, xlab = "$/hr", main = "Hourly Wages (1976 - 198
 It would be interesting to see what variables would impact our dependent variable of *wage*. Not being ideal, the independent variables in this dataset are discrete and it is difficult to discern individual points on a scatter plot. Using the standard R graphics package, a box plot is the best way to graphically look at this data:
 ```{r}
 boxplot(wage ~ sex, data = wages_df, xlab = "Gender", ylab = "$/hr", main = "Gender Based Hourly Wages (1976 - 1982)")
+```
+By taking the result at face value, the distribution of male wages is positively shifted relative to that of a female.
+```{r}
 boxplot(wage ~ exper, data = wages_df, xlab = "Years of Working Experience", ylab = "$/hr", main = "Experience Based Hourly Wages (1976 - 1982)")
+```
+From the box plots, working experience seems to play a positive role in wage growth up to about 9 years in and then seems to be not as strong as a determining factor in wage.
+```{r}
 boxplot(wage ~ school, data = wages_df, xlab = "Years of Schooling", ylab = "$/hr", main = "School Based Hourly Wages (1976 - 1982)")
 ```
-Above, the bounded boxes represent the Interquartile Range (IQR), i.e. 50% of the data bounded by the first and third quartiles.The lines extend out to 1.5*IQR and the points outside are considered outliers.
+Years of schooling seems to play a positive role, excluding years < 9, in determining wage. This is unusual behavior and may have to do with manual labor providing a decent wage with not much education. 
 
-By taking the results at face value: The distribution of male wages is positively shifted relative to that of a female; working experience seems to play a positive role in wage growth up to about 9 years in; and years of schooling seems to play a positive role, excluding years < 9, in determining wage.
+In the box plots above, the bounded boxes represent the Interquartile Range (IQR), i.e. 50% of the data bounded by the first and third quartiles.The lines extend out to +/-1.5*IQR and the points outside are considered outliers.
 
 #### III. Further Insights Using ggplot
 The [ggplot2](https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf) package contains some great plotting tools to make looking at data a lot easier.
