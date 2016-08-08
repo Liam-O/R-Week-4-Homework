@@ -1,0 +1,63 @@
+---
+author: "Liam Byrne"
+date: "August 7, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy = TRUE, fig.align = "center")
+
+# requiring, if necessary, the ggplot2 graphics package for plots
+if(!require("ggplot2", character.only = TRUE, quietly = TRUE)) {
+    install.packages("ggplot2")
+    library("ggplot2", character.only = TRUE)
+}
+
+# URL of raw Wages1 data
+wages_f <- "https://raw.github.com/vincentarelbundock/Rdatasets/master/csv/Ecdat/Wages1.csv"
+
+# Reading Wages1 into data.frame
+wages_df <- read.table(wages_f, header = TRUE, sep = ",")
+
+wages_df <- subset(wages_df, select = c("exper", "sex", "school", "wage"))
+```
+
+###R Bridge: Week 4 Assignment:
+*Choose an interesting dataset and use R graphics to describe the data. You may use base R graphics, or a graphics package of your choice.*
+
+
+#### I. The Data
+The [wage data](https://raw.github.com/vincentarelbundock/Rdatasets/master/csv/Ecdat/Wages1.csv) discussed within was gathered from [Vincent Arel-Bundock's collection of R datasets](http://vincentarelbundock.github.io/Rdatasets/datasets.html). 
+
+The data, [outlined here](http://vincentarelbundock.github.io/Rdatasets/doc/Ecdat/Wages1.html), looks at 3294 wages between the years of 1976 to 1982 with the accompanying variables of gender (*sex*), years of working experience (*exper*) and years of schooling (*school*). The purpose of this exercise is not to draw any broad conclusions on a "wage gap" during this time frame. Any "insight" is based strictly on the data and variables provided, be they ample or not in scope.
+
+
+#### II. Basic Plots
+First, let's use the basic scatter plot function to plot all combinations of the variables in the dataset to get a better idea what we are looking at.
+```{r}
+plot(wages_df)
+```
+*Wage*, being the variable of interest, can be looked at in a a histogram plot, to look at the distribution during the time period from 1976 to 1982:
+```{r}
+hist(wages_df$wage, breaks = 40, xlab = "$/hr", main = "Hourly Wages (1976 - 1982)")
+```
+It would be interesting to see what variables would impact our dependent variable of *wage*. Not being ideal, the independent variables in this dataset are discrete and it is difficult to discern individual points on a scatter plot. Using the standard R graphics package, a box plot is the best way to graphically look at this data:
+```{r}
+boxplot(wage ~ sex, data = wages_df, xlab = "Gender", ylab = "$/hr", main = "Gender Based Hourly Wages (1976 - 1982)")
+boxplot(wage ~ exper, data = wages_df, xlab = "Years of Working Experience", ylab = "$/hr", main = "Experience Based Hourly Wages (1976 - 1982)")
+boxplot(wage ~ school, data = wages_df, xlab = "Years of Schooling", ylab = "$/hr", main = "School Based Hourly Wages (1976 - 1982)")
+```
+Above, the bounded boxes represent the Interquartile Range (IQR), i.e. 50% of the data bounded by the first and third quartiles.The lines extend out to 1.5*IQR and the points outside are considered outliers.
+
+By taking the results at face value: The distribution of male wages is positively shifted relative to that of a female; working experience seems to play a positive role in wage growth up to about 9 years in; and years of schooling seems to play a positive role, excluding years < 9, in determining wage.
+
+#### III. Further Insights Using ggplot
+The [ggplot2](https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf) package contains some great plotting tools to make looking at data a lot easier.
+
+Since the role of gender in pay has been a topic of conversation, let's look at graphics using **ggplot** to compare data based off of this variable, i.e. *school* and *exper* in determining wages separated by gender. A jitter command, with a change in transparency, is sent to the plot function to spread out the discrete data and make it easier to read.
+
+```{r}
+ggplot(wages_df,aes(x = school, y = wage)) + geom_jitter(alpha = 0.3) + facet_grid(~sex)
+ggplot(wages_df,aes(x = exper, y = wage)) + geom_jitter(alpha = 0.3) + facet_grid(~sex)
+```
+Out of the two plots above, it appears that years in school has a stronger determination of wage than years of experience. When it comes to the role of the female gender in these two subsets, it appears that the 1976 to 1982 workplace may have held a lesser regard to schooling than experience when being compared to their male counterparts.
